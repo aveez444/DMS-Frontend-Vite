@@ -1,5 +1,7 @@
 {
-    "buildCommand": "npm run build",
-    "startCommand": "npm run preview"
+  "buildCommand": "npm run build",
+  "startCommand": "npm run start",
+  "environment": {
+    "NODE_ENV": "production"
   }
-  
+}
