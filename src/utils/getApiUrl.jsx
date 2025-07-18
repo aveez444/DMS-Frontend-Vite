@@ -1,14 +1,9 @@
 // src/utils/getApiUrl.js
-export const getApiUrl = (endpoint, useUniversal = false) => {
-  if (useUniversal) {
-    return `http://127.0.0.1:8000/${endpoint}`;
-  }
+// src/utils/getApiUrl.js
 
-  const hostname = window.location.hostname; // e.g., "dealership1.localhost"
-  const tenantDomain = hostname.includes(".localhost")
-    ? hostname
-    : localStorage.getItem("tenant_domain") || "127.0.0.1";
-
-  console.log("Generated API URL:", `http://${tenantDomain}:8000/${endpoint}`);
-  return `http://${tenantDomain}:8000/${endpoint}`;
+export const getApiUrl = (endpoint) => {
+  const baseURL = import.meta.env.VITE_BACKEND_URL || "https://web-production-88115.up.railway.app/api/";
+  const url = `${baseURL}${endpoint}`;
+  console.log("🔗 API URL:", url);
+  return url;
 };

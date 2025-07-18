@@ -14,7 +14,9 @@ axiosInstance.interceptors.request.use(
         const tenantDomain = localStorage.getItem("tenant_domain");
         const currentHost = tenantDomain || "localhost";
 
-        config.baseURL = `http://${currentHost}:8000`;
+        const apiDomain = import.meta.env.VITE_BACKEND_URL || "https://web-production-88115.up.railway.app/api/";
+            config.baseURL = apiDomain;
+
 
         if (sessionId) {
             config.headers["X-Session-Id"] = sessionId;

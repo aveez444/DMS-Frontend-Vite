@@ -3,7 +3,7 @@ import axios from "axios";
 export const login = async (username, password) => {
   try {
     const response = await axios.post(
-      "http://127.0.0.1:8000/api/universal-login/",
+      `${import.meta.env.VITE_BACKEND_URL}universal-login/`,
       { username, password },
       { withCredentials: true }
     );
