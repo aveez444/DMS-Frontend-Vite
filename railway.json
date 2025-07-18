@@ -1,0 +1,8 @@
+{
+    "build": {
+      "builder": "npm",
+      "buildCommand": "npm run build",
+      "startCommand": "npm run preview"
+    }
+  }
+  
