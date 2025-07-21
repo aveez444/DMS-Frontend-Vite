@@ -13,6 +13,9 @@ const LoginModal = ({ closeModal }) => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        
+        console.log("🎯 Login form submitted", { username, password: password ? "***" : "empty" });
+        
         if (!username || !password) {
             setError("Username and password are required");
             return;
@@ -22,13 +25,29 @@ const LoginModal = ({ closeModal }) => {
         setIsLoading(true);
 
         try {
+            console.log("🔄 Calling login API...");
             const authData = await login(username, password);
-            console.log("Login successful, authData:", authData);
+            console.log("✅ Login successful, received authData:", authData);
+            
+            console.log("🔄 Setting auth user in context...");
             setAuthUser(authData);
+            
+            console.log("🔄 Closing modal...");
             closeModal();
+            
+            console.log("🔄 Navigating to dashboard...");
             navigate(`/dashboard/${authData.user.uuid}`);
+            
+            console.log("✨ Login flow completed successfully");
         } catch (err) {
-            setError(err.response?.data?.error || "Login failed. Please try again.");
+            console.error("❌ Login failed:", err);
+            const errorMessage = err.response?.data?.error || 
+                               err.response?.data?.message || 
+                               err.message || 
+                               "Login failed. Please try again.";
+            setError(errorMessage);
+        } finally {
+            console.log("🏁 Setting loading to false");
             setIsLoading(false);
         }
     };
@@ -67,6 +86,7 @@ const LoginModal = ({ closeModal }) => {
                             className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
+                            disabled={isLoading}
                             autoFocus
                         />
                     </div>
@@ -82,6 +102,7 @@ const LoginModal = ({ closeModal }) => {
                             className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            disabled={isLoading}
                         />
                     </div>
                     
@@ -109,6 +130,7 @@ const LoginModal = ({ closeModal }) => {
                             type="button" 
                             className="text-blue-600 hover:text-blue-800 font-medium"
                             onClick={closeModal}
+                            disabled={isLoading}
                         >
                             Sign up
                         </button>
