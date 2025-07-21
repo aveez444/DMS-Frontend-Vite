@@ -12,14 +12,37 @@ axiosInstance.interceptors.request.use(
     (config) => {
         const sessionId = localStorage.getItem("session_id");
         const tenantDomain = localStorage.getItem("tenant_domain");
-        const currentHost = tenantDomain || "localhost";
+        const apiBaseUrl = localStorage.getItem("api_base_url");
+        const authHeaders = localStorage.getItem("auth_headers");
 
-        const apiDomain = import.meta.env.VITE_BACKEND_URL || "https://web-production-88115.up.railway.app/api/";
-            config.baseURL = apiDomain;
+        // Use tenant's API base URL if available, otherwise use the main backend URL
+        if (apiBaseUrl) {
+            config.baseURL = `${apiBaseUrl}/api/`;
+        } else {
+            config.baseURL = import.meta.env.VITE_BACKEND_URL || "https://dms-g7vw.onrender.com/api/";
+        }
 
-
+        // Add session ID header
         if (sessionId) {
             config.headers["X-Session-Id"] = sessionId;
+            config.headers["X-Session-ID"] = sessionId; // Backend might expect this format
+        }
+
+        // Add tenant domain header
+        if (tenantDomain) {
+            config.headers["X-Tenant-Domain"] = tenantDomain;
+        }
+
+        // Add any additional auth headers from login response
+        if (authHeaders) {
+            try {
+                const parsedHeaders = JSON.parse(authHeaders);
+                Object.keys(parsedHeaders).forEach(key => {
+                    config.headers[key] = parsedHeaders[key];
+                });
+            } catch (error) {
+                console.error("Error parsing auth headers:", error);
+            }
         }
 
         console.log("Request config:", {
@@ -41,7 +64,7 @@ axiosInstance.interceptors.response.use(
         if (error.response?.status === 401 || error.response?.status === 403) {
             console.log("Unauthorized or forbidden, clearing localStorage and redirecting to login");
             localStorage.clear();
-            window.location.href = "http://localhost:3000/login";
+            window.location.href = "/login";
         }
         return Promise.reject(error);
     }

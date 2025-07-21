@@ -11,24 +11,29 @@ export const login = async (username, password) => {
     console.log("Login response:", response.data);
     
     if (response.data.success) {
-      const { tenant, session_id, user } = response.data;
+      const { tenant, session_id, user, auth_headers } = response.data;
       
       console.log("Storing auth data:", {
         session_id,
         tenant_domain: tenant.domain,
         tenant_id: tenant.id,
-        user_uuid: user.uuid
+        user_uuid: user.uuid,
+        api_base_url: tenant.api_base_url,
+        auth_headers
       });
       
       localStorage.setItem("session_id", session_id);
       localStorage.setItem("tenant_domain", tenant.domain);
       localStorage.setItem("tenant_id", tenant.id);
       localStorage.setItem("user_uuid", user.uuid);
+      localStorage.setItem("api_base_url", tenant.api_base_url);
+      localStorage.setItem("auth_headers", JSON.stringify(auth_headers));
 
       return {
         user: { id: user.id, username: user.username, email: user.email, uuid: user.uuid },
-        tenant: { id: tenant.id, domain: tenant.domain },
+        tenant: { id: tenant.id, domain: tenant.domain, api_base_url: tenant.api_base_url },
         session_id,
+        auth_headers
       };
     }
     throw new Error("Login failed");
